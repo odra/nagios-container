@@ -33,6 +33,11 @@ define command {
 }
 
 define command {
+  command_name   check_pod_memory_usage
+  command_line   /opt/rhmap/nagios/plugins/memory-usage -w $ARG1$ -c $ARG2$
+}
+
+define command {
   command_name   check_mongodb
   command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$
 }
@@ -139,5 +144,14 @@ define service {
        use generic-service
        hostgroup_name core,mbaas
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description Container::Memory Usage
+       check_command check_pod_memory_usage!80!90
+       use generic-service
+       hostgroup_name core,mbaas
+       notes One or more containers are running out of memory.
        contact_groups rhmapadmins
 }

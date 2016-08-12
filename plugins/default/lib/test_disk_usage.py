@@ -11,13 +11,22 @@ class TestAnalize(unittest.TestCase):
     def runTest(self):
         self.assertEqual(analize(
             'pod-a1b2c', 'container1', [['/', 0, 0], ['/b', 15, 48]], 0, 0),
-            ([['pod-a1b2c', 'container1', '/', 0, 0, nagios.CRIT], ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.CRIT]]))
+            ([
+                ['pod-a1b2c', 'container1', '/', 0, 0, nagios.CRIT],
+                ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.CRIT]
+            ]))
         self.assertEqual(analize(
             'pod-a1b2c', 'container1', [['/', 0, 0], ['/b', 15, 48]], 20, 50),
-            ([['pod-a1b2c', 'container1', '/', 0, 0, nagios.OK], ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.WARN]]))
+            ([
+                ['pod-a1b2c', 'container1', '/', 0, 0, nagios.OK],
+                ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.WARN]
+            ]))
         self.assertEqual(analize(
             'pod-a1b2c', 'container1', [['/', 0, 0], ['/b', 15, 48]], 80, 90),
-            ([['pod-a1b2c', 'container1', '/', 0, 0, nagios.OK], ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.OK]]))
+            ([
+                ['pod-a1b2c', 'container1', '/', 0, 0, nagios.OK],
+                ['pod-a1b2c', 'container1', '/b', 15, 48, nagios.OK]
+            ]))
 
 
 class TestParseDfLine(unittest.TestCase):
@@ -103,7 +112,7 @@ class TestReport(unittest.TestCase):
                         CalledProcessError(
                             1,
                             cmd=(
-                                'oc', '-n', 'core', 'exec', 'pod-a1b2c','-c',
+                                'oc', '-n', 'core', 'exec', 'pod-a1b2c', '-c',
                                 'bad-container', '--', 'df', '--output=pcent,ipcent,target'
                             ),
                             output=(

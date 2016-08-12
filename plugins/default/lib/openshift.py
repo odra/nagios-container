@@ -88,7 +88,6 @@ def get_running_pod_containers(project, selector=None):
 
 
 def get_project():
-    # return oc("project", "-q").rstrip("\n")
     with open("/var/run/secrets/kubernetes.io/serviceaccount/namespace") as f:
         data = f.read().rstrip("\n")
     return data

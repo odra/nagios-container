@@ -60,7 +60,7 @@ def exec_in_pod_container(project, pod, container, cmd):
     return _exec_in_pod_container(oc, project, pod, container, cmd)
 
 
-def _get_running_pod_containers(oc, project, selector=None):
+def _get_running_pod_containers(oc, project, selector=None, container_names=None):
     args = ("-n", project, "get", "pods", "--show-all=false", "-o", "json")
 
     if selector:
@@ -72,7 +72,8 @@ def _get_running_pod_containers(oc, project, selector=None):
     for p in pods:
         if p["status"]["phase"] == "Running":
             for c in p["spec"]["containers"]:
-                result.append((p["metadata"]["name"], c["name"], c))
+                if (not container_names or c["name"] in container_names):
+                    result.append((p["metadata"]["name"], c["name"], c))
 
     return result
 
@@ -83,8 +84,49 @@ def _get_running_pod_containers(oc, project, selector=None):
     # ))
 
 
-def get_running_pod_containers(project, selector=None):
+def get_running_pod_containers(project, selector=None, container_names=None):
     return _get_running_pod_containers(oc, project, selector)
+
+
+def get_config_maps(project):
+    args = ("-n", project, "get", "configmap", "-o", "json")
+
+    config_maps = json.loads(oc(*args))["items"]
+
+    return {config_map["metadata"]["name"]: config_map["data"] for config_map in config_maps}
+
+
+def _get_container_env(project, pod, container):
+    config_maps = get_config_maps(project)
+
+    env_dict = {}
+
+    pod = json.loads(oc(*("-n", project, "get", "pod", pod, "-o", "json")))
+
+    for c in [c for c in pod["spec"]["containers"] if (c["name"] == container)]:
+        for e in c["env"]:
+            env_value = None
+            if "value" in e:
+                env_value = e["value"]
+            elif "valueFrom" in e:
+                try:
+                    key_ref = e["valueFrom"]["configMapKeyRef"]
+                    env_value = config_maps[key_ref["name"]][key_ref["key"]]
+                except:
+                    pass
+
+                # using try/catch seems cleaner than:
+                # if key_ref["name"] in config_maps and key_ref["key"] in config_maps[key_ref["name"]]:
+                #     env_value = config_maps[key_ref["name"]][key_ref["key"]]
+
+            if env_value:
+                env_dict[e["name"]] = env_value
+
+    return env_dict
+
+
+def get_container_env(project, pod, container):
+    return _get_container_env(project, pod, container)
 
 
 def get_project():

@@ -47,6 +47,11 @@ define command {
   command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$
 }
 
+define command {
+  command_name   check_mysql
+  command_line   /opt/rhmap/nagios/plugins/mysql-health --service $ARG1$ --containers $ARG2$ 
+}
+
 define contact {
        contact_name   rhmapadmin
        use            generic-contact
@@ -144,11 +149,20 @@ define service {
 }
 
 define service {
-       service_description Database::MongoDB::Health
-       check_command check_mongodb!mongodb,mongodb-service
+       service_description mongodb:health
+       check_command check_mongodb!mongodb,mongodb-service,mongodb-1
        use generic-service
        hostgroup_name core,mbaas
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description mysql::health
+       check_command check_mysql!mysql!mysql
+       use generic-service
+       hostgroup_name core
+       notes The mysql instance may not be functioning properly.
        contact_groups rhmapadmins
 }
 

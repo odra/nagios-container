@@ -5,15 +5,17 @@ import os
 from jinja2 import Environment, FileSystemLoader, Template
 
 fh_services = [
-    {'name': 'fh-messaging', 'checks': ['ping', 'health'], 'hostgroups': ['core', 'mbaas']},
-    {'name': 'fh-metrics', 'checks': ['ping', 'health'], 'hostgroups': ['core', 'mbaas']},
+    {'name': 'fh-messaging', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
+    {'name': 'fh-messaging','service': 'fh-messaging-service', 'checks': ['ping', 'health'], 'hostgroups': ['mbaas']},
+    {'name': 'fh-metrics', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
+    {'name': 'fh-metrics', 'service': 'fh-metrics-service', 'checks': ['ping', 'health'], 'hostgroups': ['mbaas']},
     {'name': 'fh-ngui', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
     {'name': 'fh-supercore', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
     {'name': 'fh-aaa', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
     {'name': 'fh-appstore', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
     {'name': 'fh-scm', 'checks': ['ping', 'health'], 'hostgroups': ['core']},
-    {'name': 'fh-mbaas', 'checks': ['ping', 'health'], 'hostgroups': ['mbaas']},
-    {'name': 'fh-statsd', 'checks': ['ping'], 'hostgroups': ['mbaas']},
+    {'name': 'fh-mbaas', 'service': 'fh-mbaas-service', 'checks': ['ping', 'health'], 'hostgroups': ['mbaas']},
+    {'name': 'fh-statsd', 'service': 'fh-statsd-service', 'checks': ['ping'], 'hostgroups': ['mbaas']},
     {'name': 'millicore', 'checks': ['health'], 'health_endpoint': '/box/api/health', 'hostgroups': ['core']},
     {'name': 'ups', 'checks': ['health'], 'health_endpoint': '/ag-push/rest/sys/info/health', 'hostgroups': ['core']}
 ]

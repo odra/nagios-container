@@ -87,7 +87,7 @@ define host {
 {% for fhservice in fh_services if 'ping' in fhservice['checks'] %}
 define service {
        service_description {{ fhservice['name'] }}::Ping
-       check_command check_fh_component_http_ping!{{ fhservice['name'] }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("ping_endpoint", "/sys/info/ping") }}
+       check_command check_fh_component_http_ping!{{ fhservice.get("service", fhservice['name']) }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("ping_endpoint", "/sys/info/ping") }}
        use generic-service
        hostgroup_name {{ ",".join(fhservice['hostgroups']) }}
        notes This server cannot access {{ fhservice['name'] }}, check it is running and that this server is able to talk to it on port 8080
@@ -98,7 +98,7 @@ define service {
 {% for fhservice in fh_services if 'health' in fhservice['checks'] %}
 define service {
        service_description {{ fhservice['name'] }}::Health
-       check_command check_fh_component_health!{{ fhservice['name'] }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("health_endpoint", "/sys/info/health") }}
+       check_command check_fh_component_health!{{ fhservice.get("service", fhservice['name']) }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("health_endpoint", "/sys/info/health") }}
        use generic-service
        hostgroup_name {{ ",".join(fhservice['hostgroups']) }}
        notes This server failed to get a successful response from the {{ fhservice['name'] }} health endpoint. Check the response code & body and ensure the service and its dependencies are running and configured correctly.

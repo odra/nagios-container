@@ -21,6 +21,10 @@ def generate_parser():
         help="set critical threshold percentage, "
              "must be higher than or equal the warning threshold",
     )
+    parser.add_argument(
+        "-p", "--project", required=False,
+        help="openshift project/namespace to use",
+        )
     return parser
 
 
@@ -81,12 +85,13 @@ def report(results, errors):
     return ret
 
 
-def check(warn, crit):
+def check(warn, crit, project):
     if crit < warn:
         msg = "critical threshold cannot be lower than warning threshold: %d < %d"
         raise ValueError(msg % (crit, warn))
 
-    project = openshift.get_project()
+    if not project:
+        project = openshift.get_project()
 
     results = []
     errors = []
@@ -111,7 +116,7 @@ if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
-        code = check(args.warn, args.crit)
+        code = check(args.warn, args.crit, args.project)
     except:
         traceback.print_exc()
     finally:

@@ -72,7 +72,7 @@ def _get_running_pod_containers(oc, project, selector=None):
     for p in pods:
         if p["status"]["phase"] == "Running":
             for c in p["spec"]["containers"]:
-                result.append((p["metadata"]["name"], c["name"]))
+                result.append((p["metadata"]["name"], c["name"], c))
 
     return result
 

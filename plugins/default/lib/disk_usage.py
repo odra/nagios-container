@@ -106,7 +106,7 @@ def check(warn, crit, minimum):
 
     pcs = openshift.get_running_pod_containers(project)
 
-    for pod_name, container_name in pcs:
+    for pod_name, container_name, container_data in pcs:
         try:
             result = openshift.exec_in_pod_container(project, pod_name, container_name, check_disk_cmd)
 

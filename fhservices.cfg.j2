@@ -1,7 +1,7 @@
 # Check that a component responds to a /sys/info/ping over HTTP
 define command {
        command_name   check_fh_component_http_ping
-       command_line   $USER1$/check_http -H $ARG1$ -u /sys/info/ping -p 8080
+       command_line   $USER1$/check_http -H $ARG1$ -p $ARG2$ -u $ARG3$
 }
 
 # Check that a component responds to a /sys/info/health over HTTP

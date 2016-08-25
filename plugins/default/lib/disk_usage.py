@@ -27,6 +27,10 @@ def generate_parser():
         help="set minimum threshold of disk usage  (%% of blocks or inodes), "
              "details will only be reported for volumes over this value",
     )
+    parser.add_argument(
+        "-p", "--project", required=False,
+        help="openshift project/namespace to use",
+    )
     return parser
 
 
@@ -94,19 +98,20 @@ def report(results, errors, minimum):
     return ret
 
 
-def check(warn, crit, minimum):
+def check(warn, crit, minimum, project):
     if crit < warn:
         msg = "critical threshold cannot be lower than warning threshold: %d < %d"
         raise ValueError(msg % (crit, warn))
 
-    project = openshift.get_project()
+    if not project:
+        project = openshift.get_project()
 
     results = []
     errors = []
 
     pcs = openshift.get_running_pod_containers(project)
 
-    for pod_name, container_name in pcs:
+    for pod_name, container_name, container_data in pcs:
         try:
             result = openshift.exec_in_pod_container(project, pod_name, container_name, check_disk_cmd)
 
@@ -121,7 +126,7 @@ if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
-        code = check(args.warn, args.crit, args.minimum)
+        code = check(args.warn, args.crit, args.minimum, args.project)
     except:
         traceback.print_exc()
     finally:

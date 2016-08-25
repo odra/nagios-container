@@ -38,6 +38,11 @@ define command {
 }
 
 define command {
+  command_name   check_pod_cpu_usage
+  command_line   /opt/rhmap/nagios/plugins/cpu-usage -w $ARG1$ -c $ARG2$
+}
+
+define command {
   command_name   check_mongodb
   command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$
 }
@@ -153,5 +158,14 @@ define service {
        use generic-service
        hostgroup_name core,mbaas
        notes One or more containers are running out of memory.
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description Container::CPU Usage
+       check_command check_pod_cpu_usage!80!90
+       use generic-service
+       hostgroup_name core,mbaas
+       notes One or more containers have a high CPU load.
        contact_groups rhmapadmins
 }

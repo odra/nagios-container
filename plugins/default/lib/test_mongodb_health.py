@@ -49,12 +49,11 @@ class TestParseMongoResult(unittest.TestCase):
 class TestReport(unittest.TestCase):
 
     def runTest(self):
-        self.assertEqual(
-            report(
-                pods=("mongodb-1-1-s1ngl",),
-                rs_statuses=(REPLSET_STATUS.PRIMARY,),
-                nag_statuses=(nagios.OK,),
-            ), nagios.OK)
+        self.assertEqual(report(
+            pods=("mongodb-1-1-s1ngl",),
+            rs_statuses=(REPLSET_STATUS.PRIMARY,),
+            nag_statuses=(nagios.OK,),
+        ), nagios.OK)
         self.assertEqual(report(
             pods=("mongodb-1-1-9hj1x", "mongodb-2-1-xu70c", "mongodb-3-1-wdq55"),
             rs_statuses=(REPLSET_STATUS.PRIMARY, REPLSET_STATUS.SECONDARY, REPLSET_STATUS.SECONDARY),

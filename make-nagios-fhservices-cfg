@@ -21,7 +21,7 @@ fh_services = [
 ]
 
 rhmap_admin_email = os.getenv('RHMAP_ADMIN_EMAIL', 'root@localhost')
-rhmap_router_dns = os.getenv('RHMAP_ROUTER_DNS', 'rhmap.localhost')
+rhmap_router_dns = os.getenv('RHMAP_ROUTER_DNS', 'localhost')
 rhmap_hostgroups = os.getenv('RHMAP_HOSTGROUPS', 'core')
 
 template_file = '/opt/rhmap/fhservices.cfg.j2'

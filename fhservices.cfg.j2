@@ -54,6 +54,11 @@ define command {
 }
 
 define command {
+  command_name   check_mongodb_ping
+  command_line   $USER1$/check_tcp -H $ARG1$ -p $ARG2$ -w2 -c5 -t5
+}
+
+define command {
   command_name   check_mysql
   command_line   /opt/rhmap/nagios/plugins/mysql-health --service $ARG1$ --containers $ARG2$ 
 }
@@ -171,6 +176,17 @@ define service {
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
        contact_groups rhmapadmins
 }
+
+{% for mongodb_service in mongodb_services %}
+define service {
+  service_description {{ mongodb_service }}:Ping
+  check_command check_mongodb_ping!{{ mongodb_service }}!27017
+  use generic-service
+  hostgroup_name core,mbaas
+  notes This should be able to communicate with mongodb on port 27017 and cannot. Check it is running and this server can communicate with it on that port.
+  contact_groups rhmapadmins
+}
+{% endfor %}
 
 define service {
        service_description mysql::health

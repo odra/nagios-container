@@ -73,8 +73,8 @@ def report(results, errors):
             nagios.status_code_to_label(ret), unique_statuses[nagios.CRIT], unique_statuses[nagios.WARN])
 
     for pod, container, memory_total, memory_used, usage, status in results:
-        print "%s: %s: - usage: %.1f%%" % (
-            nagios.status_code_to_label(status), pod, usage)
+        print "%s: %s:%s: - usage: %.1f%%" % (
+            nagios.status_code_to_label(status), pod, container, usage)
 
     if errors:
         ret = nagios.UNKNOWN

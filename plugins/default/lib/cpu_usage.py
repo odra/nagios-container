@@ -130,8 +130,8 @@ def report(results, errors):
             nagios.status_code_to_label(ret), unique_statuses[nagios.CRIT], unique_statuses[nagios.WARN])
 
     for pod, container, usage, status in results:
-        print "%s: %s: - usage: %.2f%%" % (
-            nagios.status_code_to_label(status), pod, usage)
+        print "%s: %s:%s: - usage: %.2f%%" % (
+            nagios.status_code_to_label(status), pod, container, usage)
 
     if errors:
         ret = nagios.UNKNOWN
@@ -162,7 +162,8 @@ def check(warn, crit, project):
         try:
             if cpu_limit:
                 curr_usage, curr_uptime, limit = get_container_cpu_usage(project, pod_name, container_name)
-                curr_cpu_usage[pod_name] = {container_name: [curr_usage, curr_uptime]}
+                curr_cpu_usage[pod_name] = curr_cpu_usage.get(pod_name, {})
+                curr_cpu_usage[pod_name][container_name] = [curr_usage, curr_uptime]
                 prev_usage, prev_uptime = prev_cpu_usage.get(pod_name, {}).get(container_name, [None, None])
                 results.extend(analize(pod_name, container_name, prev_usage,
                                        curr_usage, prev_uptime, curr_uptime, limit, warn, crit))

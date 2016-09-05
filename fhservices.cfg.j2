@@ -49,6 +49,11 @@ define command {
 }
 
 define command {
+  command_name   check_pod_resource_limits
+  command_line   /opt/rhmap/nagios/plugins/resource-limits
+}
+
+define command {
   command_name   check_mongodb
   command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$
 }
@@ -212,5 +217,14 @@ define service {
        use generic-service
        hostgroup_name core,mbaas
        notes One or more containers have a high CPU load.
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description Container::Resource Limits
+       check_command check_pod_resource_limits
+       use generic-service
+       hostgroup_name core,mbaas
+       notes One or more containers has no limit set for CPU and/or Memory.
        contact_groups rhmapadmins
 }

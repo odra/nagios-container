@@ -1,5 +1,10 @@
 #!/usr/bin/bash
 
+# Add nagios dirs
+mkdir -p /var/log/nagios/archives \
+      /var/log/nagios/rw \
+      /var/log/nagios/spool/checkresults
+
 set -o errexit
 set -o nounset
 set -o pipefail

@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+import os
+import time
+
+host = os.getenv('RHMAP_ROUTER_DNS', 'localhost')
+nagios_cmd_file = os.getenv('NAGIOS_CMD_FILE', '/var/spool/nagios/cmd/nagios.cmd')
+
+
+# https://old.nagios.org/developerinfo/externalcommands/commandinfo.php?command_id=130
+def force_service_checks():
+    print "Forcing service checks on '%s' ..." % (host)
+
+    with open(nagios_cmd_file, "a") as f:
+        cmd = "[%s] SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;1110741500\n" % (int(time.time()),host)
+        f.write(cmd)
+
+    print 'Waiting 20s ...'
+    time.sleep(20)
+
+force_service_checks()
+force_service_checks()
+
+print 'Done, all service checks should be up to date.'

@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+import os
+import sys
+import json
+import urllib2
+import base64
+
+# Codes returned from the API are different from the normal nagios status codes
+# nagios_service_status = {'1' => 'pending', '2' => 'ok', '4' => 'warning', '8' => 'unknown', '16' => 'critical' };
+
+host = os.getenv('RHMAP_ROUTER_DNS', 'localhost')
+port = os.getenv('NAGIOS_SERVICE_PORT', 8080)
+nagios_user = os.getenv('NAGIOS_USER', 'nagiosadmin')
+nagios_pass = os.getenv('NAGIOS_PASSWORD', 'password')
+
+url = 'http://%s:%s/nagios/cgi-bin/statusjson.cgi?query=servicelist' % (host,port)
+
+request = urllib2.Request(url)
+base64string = base64.b64encode('%s:%s' % (nagios_user, nagios_pass))
+request.add_header("Authorization", "Basic %s" % base64string)
+resp = urllib2.urlopen(request).read()
+data = json.loads(resp)
+
+exit_status = 0
+if data['data']['servicelist'][host]:
+    for check, status in data['data']['servicelist'][host].items():
+        print 'Service Check: %s, Status Code: %s' % (check, status)
+        if status != 2:
+            exit_status = 1
+
+else:
+    print "No service checks defined for host '%s'" % (host)
+    exit_status = 1
+
+sys.exit(exit_status)

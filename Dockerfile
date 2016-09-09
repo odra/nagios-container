@@ -26,6 +26,7 @@ RUN yum install -y epel-release && \
 COPY supervisord.conf /etc/supervisord.conf
 COPY make-nagios-fhservices-cfg make-nagios-commands-cfg fhservices.cfg.j2 commands.cfg.j2 /opt/rhmap/
 COPY plugins/default/ /opt/rhmap/nagios/plugins/
+COPY scripts/ /opt/rhmap/
 RUN chmod -R 755 /opt/rhmap/nagios/plugins/
 COPY start /start
 

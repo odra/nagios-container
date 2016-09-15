@@ -147,7 +147,7 @@ define service {
 }
 
 define service {
-      service_description memcached:ping
+      service_description memcached:Ping
       check_command check_memcached!11211
       use generic-service
       hostgroup_name core
@@ -156,7 +156,7 @@ define service {
 }
 
 define service {
-      service_description redis:ping
+      service_description redis:Ping
       check_command check_redis!6379
       use generic-service
       hostgroup_name core

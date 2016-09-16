@@ -1,23 +1,40 @@
 #!/usr/bin/env python
 import os
 import time
+import argparse
 
 host = os.getenv('RHMAP_ROUTER_DNS', 'localhost')
 nagios_cmd_file = os.getenv('NAGIOS_CMD_FILE', '/var/spool/nagios/cmd/nagios.cmd')
 
 
+def generate_parser():
+    parser = argparse.ArgumentParser(
+        description="Schedule a forced check of all services on this host",
+        )
+    parser.add_argument(
+        "--times", type=int, default=2,
+        help="Number of times to schedule a forced check",
+        )
+    parser.add_argument(
+        "--delay", type=int, default=20,
+        help="Time in seconds to delay after each call to force the checks",
+        )
+    return parser
+
 # https://old.nagios.org/developerinfo/externalcommands/commandinfo.php?command_id=130
-def force_service_checks():
-    print "Forcing service checks on '%s' ..." % (host)
+def force_service_checks(count, total, delay):
+    print "Forcing service checks on '%s' (%s/%s) ..." % (host, count, total)
 
     with open(nagios_cmd_file, "a") as f:
         cmd = "[%s] SCHEDULE_FORCED_HOST_SVC_CHECKS;%s;1110741500\n" % (int(time.time()),host)
         f.write(cmd)
 
-    print 'Waiting 20s ...'
-    time.sleep(20)
+    print 'Waiting %ss ...' % (delay)
+    time.sleep(delay)
 
-force_service_checks()
-force_service_checks()
+args = generate_parser().parse_args()
+
+for i in range(args.times):
+    force_service_checks(i + 1, args.times, args.delay)
 
 print 'Done, all service checks should be up to date.'

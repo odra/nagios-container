@@ -51,7 +51,7 @@ check_mongodb_cmd = (
 def parse_mongo_result(output):
     try:
         js = json.loads(output)
-        return int(js["myState"])
+        return int(js.get("myState", js.get("state")))
     except:
         return None
 

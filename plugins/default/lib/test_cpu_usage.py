@@ -91,5 +91,7 @@ class TestReport(unittest.TestCase):
                     ),
                 ),
             ), nagios.UNKNOWN)
+
+
 if __name__ == "__main__":
     unittest.main()

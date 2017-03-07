@@ -15,6 +15,7 @@ def enum(*sequential, **named):
     enums['reverse_mapping'] = reverse
     return type('Enum', (), enums)
 
+
 # MongoDB replset status codes:
 REPLSET_STATUS = enum(
     STARTUP=0,
@@ -115,6 +116,7 @@ def check(containers):
     nag_statuses = map(analize, rs_statuses)
 
     return report(pods, rs_statuses, nag_statuses)
+
 
 if __name__ == "__main__":
     args = generate_parser().parse_args()

@@ -42,6 +42,11 @@ class TestParseMongoResult(unittest.TestCase):
             '7","health":1,"state":2,"stateStr":"SECONDARY","uptime":93162,"optime":{"t":1470269408'
             ',"i":2},"optimeDate":"2016-08-04T00:10:08.000Z","self":true}],"ok":1}'
         ), REPLSET_STATUS.SECONDARY)
+        self.assertEqual(parse_mongo_result(
+            '{"state":10,"stateStr":"REMOVED","uptime":80472,"optime":{"ts":{"t":1474915670,"i":2},'
+            '"t":{"floatApprox":4}},"optimeDate":"2016-09-26T18:47:50.000Z","ok":0,"errmsg":"Our re'
+            'plica set config is invalid or we are not a member of it","code":93}'
+        ), REPLSET_STATUS.REMOVED)
         self.assertEqual(parse_mongo_result("\n"), None)
         self.assertEqual(parse_mongo_result(""), None)
 

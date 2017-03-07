@@ -175,7 +175,7 @@ define service {
 
 define service {
        service_description mongodb::replicaset
-       check_command check_mongodb!mongodb,mongodb-service,mongodb-1
+       check_command check_mongodb!mongodb,mongodb-service
        use generic-service
        hostgroup_name mbaas
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members

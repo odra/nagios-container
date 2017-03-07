@@ -19,7 +19,7 @@ def _get_running_pod_names(oc, project, selector=None, container_names=None):
     # Manually filter Running pods because of a bug in `oc get`, see:
     # https://github.com/kubernetes/kubernetes/issues/29115
     # return oc("-n", project, "get", "pods", "--show-all=false", "-o", "name")
-    args = ("-n", project, "get", "pods", "--show-all=false", "-o", "json")
+    args = ("-n", project, "get", "pods", "-o", "json")
 
     if selector:
         args += ("--selector=" + ",".join(selector),)

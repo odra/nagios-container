@@ -12,5 +12,6 @@ class TestNagios(unittest.TestCase):
         self.assertEqual(nagios.CRIT, 2)
         self.assertEqual(nagios.UNKNOWN, 3)
 
+
 if __name__ == "__main__":
     unittest.main()

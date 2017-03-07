@@ -173,6 +173,7 @@ def check(warn, crit, project):
     write_cpu_usage(curr_cpu_usage)
     return report(results, errors)
 
+
 if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN

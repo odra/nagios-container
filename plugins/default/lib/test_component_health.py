@@ -30,5 +30,6 @@ class TestParseResponse(unittest.TestCase):
              []))
         self.assertRaises(ValueError, parse_response, '')
 
+
 if __name__ == "__main__":
     unittest.main()

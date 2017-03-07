@@ -112,6 +112,7 @@ def check(warn, crit, project):
 
     return report(results, errors)
 
+
 if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN

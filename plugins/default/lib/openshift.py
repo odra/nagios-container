@@ -18,7 +18,6 @@ def get_service_selectors(project, service):
 def _get_running_pod_names(oc, project, selector=None, container_names=None):
     # Manually filter Running pods because of a bug in `oc get`, see:
     # https://github.com/kubernetes/kubernetes/issues/29115
-    # return oc("-n", project, "get", "pods", "--show-all=false", "-o", "name")
     args = ("-n", project, "get", "pods", "-o", "json")
 
     if selector:
@@ -61,7 +60,8 @@ def exec_in_pod_container(project, pod, container, cmd):
 
 
 def _get_running_pod_containers(oc, project, selector=None, container_names=None):
-    args = ("-n", project, "get", "pods", "--show-all=false", "-o", "json")
+    # Changed param from "--show-all=false" to "--show-all=true" due to changes in oc client
+    args = ("-n", project, "get", "pods", "--show-all=true", "-o", "json")
 
     if selector:
         args += ("--selector=" + ",".join(selector),)

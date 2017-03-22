@@ -173,6 +173,7 @@ define service {
        contact_groups rhmapadmins
 }
 
+{%if mongodb_instances > 1 %}
 define service {
        service_description mongodb::replicaset
        check_command check_mongodb!mongodb,mongodb-service
@@ -181,6 +182,7 @@ define service {
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
        contact_groups rhmapadmins
 }
+{% endif %}
 
 {% for mongodb_service in mongodb_services %}
 define service {
@@ -196,8 +198,8 @@ define service {
 define service {
        service_description mysql::health
        check_command check_mysql!mysql!mysql
-       use generic-service
        hostgroup_name core
+       use generic-service
        notes The mysql instance may not be functioning properly.
        contact_groups rhmapadmins
 }

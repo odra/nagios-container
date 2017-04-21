@@ -3,6 +3,7 @@ import argparse
 import sys
 import traceback
 from collections import Counter
+import re
 
 import openshift
 import nagios
@@ -28,8 +29,18 @@ def generate_parser():
     return parser
 
 
-check_memory_usage_cmd = ("cat", "/sys/fs/cgroup/memory/memory.usage_in_bytes")
+check_memory_usage_cmd = ("cat", "/proc/meminfo")
 check_memory_limit_cmd = ("cat", "/sys/fs/cgroup/memory/memory.limit_in_bytes")
+
+
+def get_memfree(output):
+    data = None
+    try:
+        data = int(re.findall(r'MemFree\:\s+([0-9]+)\skB\n', output)[0]) * 1024
+    except IndexError:
+        data = -1
+    finally:
+        return data
 
 
 def analize(pod, container, memory_limit, memory_used, warning_threshold, critical_threshold):
@@ -103,6 +114,7 @@ def check(warn, crit, project):
         try:
             memory_usage = openshift.exec_in_pod_container(
                 project, pod_name, container_name, check_memory_usage_cmd)
+            memory_usage = get_memfree(memory_usage)
             if memory_limit:
                 memory_limit = openshift.exec_in_pod_container(
                     project, pod_name, container_name, check_memory_limit_cmd)

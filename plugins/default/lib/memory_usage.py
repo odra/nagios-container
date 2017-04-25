@@ -30,28 +30,34 @@ def generate_parser():
 
 
 check_memory_usage_cmd = ("cat", "/proc/meminfo")
+check_jvm_max_heap_cmd = ("java", "-XX:+PrintFlagsFinal", "-version")
 check_memory_limit_cmd = ("cat", "/sys/fs/cgroup/memory/memory.limit_in_bytes")
+
+
+def jvm_data(data, key):
+    return re.findall(r'\s+[a-zA-Z]+\s%s\s+\:?\=\s([0-9]+)\s+\{[a-zA-Z\s?]+\}\n' % key, data)[0]
 
 
 def get_meminfo_data(field, output):
     data = None
     try:
-        data = int(re.findall(r'%s\:\s+([0-9]+)\skB\n' % data, output)[0])
+        data = int(re.findall(r"%s\:\s+([0-9]+)\skB\n" % data, output)[0])
     except IndexError:
         data = None
     finally:
         return data
 
 
-def get_memused(data, in_bytes=True):
-    free = get_meminfo_data('MemFree', data)
-    total = get_meminfo_data('MemTotal', data)
-    if free is None or total is None:
-        return -1
-    used = total - free
-    if in_bytes:
-        return used * 1024
-    return used
+def heap_thread_size(pid=1, thread_size=1024):
+    folder = '/proc/%s/task' % pid
+    total_tasks = len([task for task in os.listdir(folder) if task.isdigit()])
+    return total_tasks * thread_size
+
+
+def get_memused(data, jvm_data):
+    initial =  int(jvm_data(jvm_data, 'InitialHeapSize'))
+    single_thread_size = int(jvm_data(info, 'ThreadStackSize'))
+    return initial + heap_thread_size(2727, thread_size=single_thread_size)
 
 
 def analize(pod, container, memory_limit, memory_used, warning_threshold, critical_threshold):
@@ -125,7 +131,9 @@ def check(warn, crit, project):
         try:
             memory_usage = openshift.exec_in_pod_container(
                 project, pod_name, container_name, check_memory_usage_cmd)
-            memory_usage = get_memused(memory_usage)
+            jvm_heap = openshift.exec_in_pod_container(
+                project, pod_name, container_name, check_jvm_max_heap_cmd)
+            memory_usage = get_memused(memory_usage, jvm_heap)
             if memory_limit:
                 memory_limit = openshift.exec_in_pod_container(
                     project, pod_name, container_name, check_memory_limit_cmd)

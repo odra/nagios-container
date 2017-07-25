@@ -22,6 +22,26 @@ define command {
        command_line   $USER1$/check_tcp -H memcached -p $ARG1$ -E -s 'version\n' -e 'VERSION' -w2 -c5 -t5
 }
 
+# Check that jenkins response to /login over HTTP
+define command {
+       command_name   check_jenkins
+       command_line   $USER1$/check_http -H jenkins -p $ARG1$ -u $ARG2$
+}
+
+# Check the status of each mac server via jenkins
+define command {
+      command_name    ios_machine_health
+      command_line    /opt/rhmap/nagios/plugins/ios_machine_health -H $ARG1$ -P $ARG2$ -u $ARG3$ -p $ARG4$
+}
+
+# Check the status of the android-sdk
+define command {
+      command_name    android_sdk_health
+      command_line    /opt/rhmap/nagios/plugins/android_sdk_health
+}
+
+
+
 # Check for valid response from redis
 define command {
        command_name   check_redis
@@ -89,6 +109,10 @@ define hostgroup {
 define hostgroup {
        hostgroup_name mbaas
        alias mbaas
+}
+define hostgroup {
+       hostgroup_name digger
+       alias digger
 }
 
 # Host template
@@ -168,7 +192,7 @@ define service {
        service_description Storage::Pod::Disk Usage
        check_command check_pod_disk_usage!80!90
        use generic-service
-       hostgroup_name core,mbaas
+       hostgroup_name core,mbaas,digger
        notes One or more pods have volumes which are running out of disk.  You should clean up the files on this pod, if possible, or scale down/up the pod so that it has a fresh filesystem.
        contact_groups rhmapadmins
 }
@@ -183,6 +207,41 @@ define service {
        contact_groups rhmapadmins
 }
 {% endif %}
+
+define service {
+       service_description jenkins:ping
+       check_command check_jenkins!80!/login
+       use generic-service
+       hostgroup_name digger
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description mac_ios:ping
+       check_command ios_machine_health!{{ jenkins_host }}!443!{{ jenkins_user }}!{{ jenkins_pass }}
+       use generic-service
+       hostgroup_name digger
+       contact_groups rhmapadmins
+
+}
+
+define service {
+      service_description android_sdk:ping
+      check_command android_sdk_health
+      use generic-service
+      hostgroup_name digger
+      contact_groups rhmapadmins
+}
+
+{% for host in macos_list %}
+define service {
+       service_description macos:ping
+       check_command ping_macos!host
+       use generic-service
+       hostgroup_name digger
+       contact_groups rhmapadmins
+}
+{% endfor %}
 
 {% for mongodb_service in mongodb_services %}
 define service {
@@ -208,7 +267,7 @@ define service {
        service_description Container::Memory Usage
        check_command check_pod_memory_usage!80!90
        use generic-service
-       hostgroup_name core,mbaas
+       hostgroup_name core,mbaas,digger
        notes One or more containers are running out of memory.
        contact_groups rhmapadmins
 }
@@ -217,7 +276,7 @@ define service {
        service_description Container::CPU Usage
        check_command check_pod_cpu_usage!80!90
        use generic-service
-       hostgroup_name core,mbaas
+       hostgroup_name core,mbaas,digger
        notes One or more containers have a high CPU load.
        contact_groups rhmapadmins
 }
@@ -226,7 +285,7 @@ define service {
        service_description Container::Resource Limits
        check_command check_pod_resource_limits
        use generic-service
-       hostgroup_name core,mbaas
+       hostgroup_name core,mbaas,digger
        notes One or more containers has no limit set for CPU and/or Memory.
        contact_groups rhmapadmins
 }

@@ -34,6 +34,13 @@ define command {
       command_line    /opt/rhmap/nagios/plugins/ios_machine_health -H $ARG1$ -P $ARG2$ -u $ARG3$ -p $ARG4$
 }
 
+# Check the status of the android-sdk
+define command {
+      command_name    android_sdk_health
+      command_line    /opt/rhmap/nagios/plugins/android_sdk_health
+}
+
+
 
 # Check for valid response from redis
 define command {
@@ -216,6 +223,14 @@ define service {
        hostgroup_name digger
        contact_groups rhmapadmins
 
+}
+
+define service {
+      service_description android_sdk:ping
+      check_command android_sdk_health
+      use generic-service
+      hostgroup_name digger
+      contact_groups rhmapadmins
 }
 
 {% for host in macos_list %}

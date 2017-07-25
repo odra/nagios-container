@@ -54,7 +54,6 @@ def report(results, errors):
     ret = max(unique_statuses)
 
     for computer in results:
-        computer[1]
         if computer[1] == nagios.CRIT:
             print 'Machine: %s is unavailable to Jenkins - Status is %s ' % (
                 computer[0], nagios.status_code_to_label(computer[1]))

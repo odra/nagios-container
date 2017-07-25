@@ -116,7 +116,7 @@ def do_request(host, port, username, password):
             data = json.loads(response)
         except ValueError:
             raise RequestError('The response data did not return parseable json data')
-    except urllib2.URLErrror as error:
+    except urllib2.URLError as error:
         raise RequestError(
             'The health endpoint at "%s" is not contactable. Error: %s' %
             (request, error))

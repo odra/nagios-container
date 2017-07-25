@@ -17,7 +17,8 @@ fh_services = [
     {'name': 'fh-mbaas', 'service': 'fh-mbaas-service', 'checks': ['ping', 'health'], 'hostgroups': ['mbaas']},
     {'name': 'fh-statsd', 'service': 'fh-statsd-service', 'checks': ['ping'], 'hostgroups': ['mbaas']},
     {'name': 'millicore', 'checks': ['ping', 'health'], 'health_endpoint': '/box/api/health',  'ping_endpoint': '/box/srv/1.1/tst/version', 'hostgroups': ['core']},
-    {'name': 'ups', 'checks': ['ping', 'health'], 'health_endpoint': '/ag-push/rest/sys/info/health', 'ping_endpoint': '/ag-push/rest/sys/info/ping', 'hostgroups': ['core']}
+    {'name': 'ups', 'checks': ['ping', 'health'], 'health_endpoint': '/ag-push/rest/sys/info/health', 'ping_endpoint': '/ag-push/rest/sys/info/ping', 'hostgroups': ['core']},
+    {'name': 'android-sdk', 'checks' : ['ping'], 'hostgroups': ['digger']}
 ]
 
 rhmap_admin_email = os.getenv('RHMAP_ADMIN_EMAIL', 'root@localhost')

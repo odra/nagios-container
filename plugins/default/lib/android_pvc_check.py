@@ -19,6 +19,8 @@ def generate_parser():
 
 def report(results, errors):
     if errors:
+        for status, ex in errors:
+            print "%s , %s" % (nagios.status_code_to_label("WARNING"), ex)
         return nagios.UNKNOWN
 
     for result in results:
@@ -34,26 +36,34 @@ def report(results, errors):
             print 'Unable to determine the status of the AndroidSDK PersistentVolumeClaim'
 
 
-def do_request(project):
+def parse_response(data):
     results = []
     errors = []
-    pvcs = openshift.get_pvcs(project)
-    for pvc in pvcs:
-        if "android-sdk" in pvc.name:
-            if "Bound" in pvc['status']['phase']:
-                results.append(nagios.OK)
+    for pvc in data:
+        print pvc
+        try:
+            if "android-sdk" in pvc['name']:
+                if "Bound" in pvc['status']['phase']:
+                    results.append(nagios.OK)
+                else:
+                    results.append(nagios.CRIT)
             else:
                 results.append(nagios.CRIT)
-        else:
-            results.append(nagios.CRIT)
+        except KeyError as e:
+            errors.append((nagios.UNKNOWN, e))
     return results, errors
+
+
+def do_request(project):
+    return openshift.get_pvcs(project)
 
 
 def check(project):
     if not project:
         project = openshift.get_project()
-    results, error = do_request(project)
-    return report(results, error)
+    data = do_request(project)
+    results, errors = parse_response(data)
+    return report(results, errors)
 
 
 if __name__ == "__main__":

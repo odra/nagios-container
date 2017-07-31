@@ -238,22 +238,12 @@ define service {
 }
 
 define service {
-      service_description android_pvc:check
+      service_description android_pvc::check
       check_command android_pvc_check
       use generic-service
       hostgroup_name digger
       contact_groups rhmapadmins
 }
-
-{% for host in macos_list %}
-define service {
-       service_description macos:ping
-       check_command ping_macos!host
-       use generic-service
-       hostgroup_name digger
-       contact_groups rhmapadmins
-}
-{% endfor %}
 
 {% for mongodb_service in mongodb_services %}
 define service {

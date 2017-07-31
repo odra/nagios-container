@@ -40,6 +40,10 @@ define command {
       command_line    /opt/rhmap/nagios/plugins/android_sdk_health
 }
 
+define command {
+      command_name    android_pvc_check
+      command_line    /opt/rhmap/nagios/plugins/android_pvc_check
+}
 
 
 # Check for valid response from redis
@@ -209,7 +213,7 @@ define service {
 {% endif %}
 
 define service {
-       service_description jenkins:ping
+       service_description jenkins::ping
        check_command check_jenkins!80!/login
        use generic-service
        hostgroup_name digger
@@ -217,7 +221,7 @@ define service {
 }
 
 define service {
-       service_description mac_ios:ping
+       service_description mac_ios::ping
        check_command ios_machine_health!{{ jenkins_host }}!443!{{ jenkins_user }}!{{ jenkins_pass }}
        use generic-service
        hostgroup_name digger
@@ -226,8 +230,16 @@ define service {
 }
 
 define service {
-      service_description android_sdk:ping
+      service_description android_sdk::ping
       check_command android_sdk_health
+      use generic-service
+      hostgroup_name none
+      contact_groups rhmapadmins
+}
+
+define service {
+      service_description android_pvc:check
+      check_command android_pvc_check
       use generic-service
       hostgroup_name digger
       contact_groups rhmapadmins

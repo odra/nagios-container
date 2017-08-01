@@ -4,6 +4,7 @@ import nagios
 import sys
 import traceback
 import openshift
+import json
 
 
 def generate_parser():
@@ -39,9 +40,10 @@ def report(results, errors):
 def parse_response(data):
     results = []
     errors = []
-    for pvc in data['items']:
+    objs = json.loads(data[0])
+    for pvc in objs['items']:
         try:
-            if "android-sdk" in pvc['name']:
+            if "android-sdk" in pvc['metadata']['name']:
                 if "Bound" in pvc['status']['phase']:
                     results.append(nagios.OK)
                 else:

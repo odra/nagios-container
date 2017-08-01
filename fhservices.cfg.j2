@@ -230,14 +230,6 @@ define service {
 }
 
 define service {
-      service_description android_sdk::ping
-      check_command android_sdk_health
-      use generic-service
-      hostgroup_name none
-      contact_groups rhmapadmins
-}
-
-define service {
       service_description android_pvc::check
       check_command android_pvc_check
       use generic-service

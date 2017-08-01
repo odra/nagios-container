@@ -39,8 +39,7 @@ def report(results, errors):
 def parse_response(data):
     results = []
     errors = []
-    for pvc in data:
-        print pvc
+    for pvc in data['items']:
         try:
             if "android-sdk" in pvc['name']:
                 if "Bound" in pvc['status']['phase']:

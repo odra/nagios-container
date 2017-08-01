@@ -46,10 +46,10 @@ def parse_response(data):
             if "android-sdk" in pvc['metadata']['name']:
                 if "Bound" in pvc['status']['phase']:
                     results.append(nagios.OK)
+                    return results, errors
                 else:
                     results.append(nagios.CRIT)
-            else:
-                results.append(nagios.CRIT)
+                    return results, errors
         except KeyError as e:
             errors.append((nagios.UNKNOWN, e))
     return results, errors

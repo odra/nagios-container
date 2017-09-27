@@ -106,7 +106,7 @@ def parse_response(response):
 
 def do_request(host, port, username, password):
     endpoint = "/computer/api/json"
-    request = urllib2.Request("https://%s:%s%s" % (host, port, endpoint))
+    request = urllib2.Request("http://%s:%s%s" % (host, port, endpoint))
     base64string = base64.encodestring('%s:%s' % (username, password)).replace('\n', '')
     request.add_header("Authorization", "Basic %s" % base64string)
     try:

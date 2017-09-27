@@ -223,7 +223,7 @@ define service {
 {%if check_mac %}
 define service {
        service_description mac_ios::ping
-       check_command ios_machine_health!{{ jenkins_host }}!443!{{ jenkins_user }}!{{ jenkins_pass }}
+       check_command ios_machine_health!{{ jenkins_host }}!{{ jenkins_port }}!{{ jenkins_user }}!{{ jenkins_pass }}
        use generic-service
        hostgroup_name digger
        contact_groups rhmapadmins

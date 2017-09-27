@@ -35,7 +35,8 @@ else:
 
 mongodb_services = ['mongodb-%s' % i for i in xrange(1, mongodb_count + 1)]
 
-jenkins_host = os.getenv('JENKINS_HOST')
+jenkins_host = os.getenv('JENKINS_SERVICE_HOST')
+jenkins_port = os.getenv('JENKINS_SERVICE_PORT')
 jenkins_user = os.getenv('JENKINS_USER')
 jenkins_pass = os.getenv('JENKINS_PASS')
 
@@ -68,6 +69,7 @@ j2renderedouput = j2template.render(fh_services=fh_services,
                                     rhmap_router_dns=rhmap_router_dns,
                                     rhmap_admin_email=rhmap_admin_email,
                                     jenkins_host=jenkins_host,
+                                    jenkins_port=jenkins_port,
                                     jenkins_user=jenkins_user,
                                     jenkins_pass=jenkins_pass,
                                     check_android=check_android,

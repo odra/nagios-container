@@ -72,7 +72,7 @@ if __name__ == "__main__":
     code = nagios.UNKNOWN
     try:
         code = check(args.project)
-    except:
+    except Exception as eq:
         traceback.print_exc()
     finally:
         sys.exit(code)

@@ -21,6 +21,7 @@ When developing the project, you'll need to install the dependencies:
 
 ```
 pip install flake8 autopep8
+brew install flake8 #osx
 ```
 
 Use [flake8](https://pypi.python.org/pypi/flake8) to verify that the code
@@ -75,7 +76,7 @@ define service {
 }
 ```
 
-The syntax for passing arguments is `check_command <command-name>!<param1>!<param2>` 
+The syntax for passing arguments is `check_command <command-name>!<param1>!<param2>`
 
 * define the command called by check_command
 ```

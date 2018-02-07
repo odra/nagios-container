@@ -32,6 +32,17 @@ except ValueError:
 
 mongodb_services = ['mongodb-%s' % i for i in xrange(1, mongodb_count + 1)]
 
+try:
+    mysql_count = int(os.getenv('MYSQL_ENDPOINT_COUNT', 3))
+#if env var is an empty string or is not able to be converted into a number
+except ValueError:
+    mysql_count = 3
+
+if mysql_count == 3:
+    mysql_services = ['mysql', 'mysql-2', 'mysql-3']
+else:
+    mysql_services = ['mysql']
+
 jenkins_host = os.getenv('JENKINS_SERVICE_HOST')
 jenkins_port = os.getenv('JENKINS_SERVICE_PORT')
 jenkins_user = os.getenv('JENKINS_USER')
@@ -62,6 +73,8 @@ j2template = j2env.get_template(template_basename)
 j2renderedouput = j2template.render(fh_services=fh_services,
                                     mongodb_services=mongodb_services,
                                     mongodb_instances=mongodb_count,
+                                    mysql_services=mysql_services,
+                                    mysql_instances=mysql_count,
                                     rhmap_hostgroups=rhmap_hostgroups,
                                     rhmap_router_dns=rhmap_router_dns,
                                     rhmap_admin_email=rhmap_admin_email,

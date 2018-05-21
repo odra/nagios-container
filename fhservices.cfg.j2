@@ -94,6 +94,11 @@ define command {
 }
 
 define command {
+  command_name   check_fhmessaging_collections
+  command_line   /opt/rhmap/nagios/plugins/check_fhmessaging_collections -c $ARG1$
+}
+
+define command {
   command_name   check_mysql
   command_line   /opt/rhmap/nagios/plugins/mysql-health --service $ARG1$ --containers $ARG2$
 }
@@ -287,6 +292,15 @@ define service {
   }
   {% endfor %}
 {% endif %}
+
+define service {
+       service_description MongoDB::fhmessaging::collections
+       check_command check_fhmessaging_collections!mongodb
+       use generic-service
+       hostgroup_name core,mbaas
+       notes Missing daily topic_YYYYMMDD fh-messaging collections, potentially a millicore threading issue
+       contact_groups rhmapadmins
+}
 
 define service {
        service_description Container::Memory Usage

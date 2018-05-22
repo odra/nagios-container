@@ -1,3 +1,9 @@
+# cannot ping localhost, so force check_dummy=0
+define command{
+    command_name    no-localhost-check
+    command_line    /usr/lib64/nagios/plugins/check_dummy 0 "localhost host check is not checkable"
+}
+
 # Check that a component responds to a /sys/info/ping over HTTP
 define command {
        command_name   check_fh_component_http_ping
@@ -132,8 +138,8 @@ define host {
   check_interval          5
   retry_interval          1
   max_check_attempts      10
-  check_command           check_nagios_host_alive
-  notification_period     workhours
+  check_command           no-localhost-check
+  notification_period     24x7
   notification_interval   120
   notification_options    d,u,r
   contact_groups          rhmapadmins

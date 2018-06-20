@@ -42,6 +42,14 @@ def _get_running_pod_names(oc, project, selector=None, container_names=None):
 def get_running_pod_names(project, selector=None, container_names=None):
     return _get_running_pod_names(oc, project, selector, container_names)
 
+def _get_nodes_from_names(pods):
+    nodes=[]
+    for pod in pods:
+        nodes.append(json.loads(oc("get", "pods", pod ,"-o", "json"))["spec"]["nodeName"])
+    return nodes
+
+def get_nodes_from_names(pods):
+    return _get_nodes_from_names(pods)
 
 def _exec_in_pods(oc, project, pods, cmd):
     return [oc("-n", project, "exec", name, "--", *cmd) for name in pods]

@@ -94,6 +94,11 @@ define command {
 }
 
 define command {
+  command_name   check_mongodb_affinity
+  command_line   /opt/rhmap/nagios/plugins/mongodb-affinity
+}
+
+define command {
   command_name   check_fhmessaging_collections
   command_line   /opt/rhmap/nagios/plugins/check_fhmessaging_collections -c $ARG1$
 }
@@ -224,6 +229,15 @@ define service {
        use generic-service
        hostgroup_name core,mbaas
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description mongodb::affinity
+       check_command check_mongodb_affinity
+       use generic-service
+       hostgroup_name core,mbaas
+       notes This check ensures that each mongodb pod is on a seperate node
        contact_groups rhmapadmins
 }
 {% endif %}

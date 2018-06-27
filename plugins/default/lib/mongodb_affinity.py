@@ -33,8 +33,6 @@ def check():
     if len(nodes) < 3:
         output = nodes_pods
         return nagios.CRIT
-    print(pods)
-    print(nodes)
     if nodes[0] == nodes[1] or nodes[0] == nodes[2] or nodes[1] == nodes[2]:
         output = nodes_pods
         nag_status = nagios.WARN

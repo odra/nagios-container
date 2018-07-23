@@ -113,6 +113,11 @@ define command {
   command_line   /opt/rhmap/nagios/plugins/mysql-master-slave-health --service $ARG1$ --containers $ARG2$
 }
 
+define command {
+  command_name   check_pod_affinity
+  command_line   /opt/rhmap/nagios/plugins/pod-affinity
+}
+
 define contact {
        contact_name   rhmapadmin
        use            generic-contact
@@ -241,6 +246,15 @@ define service {
        contact_groups rhmapadmins
 }
 {% endif %}
+
+define service {
+       service_description pod::affinity
+       check_command check_pod_affinity
+       use generic-service
+       hostgroup_name core,mbaas
+       notes This check ensures that each component pod is running on a seperate node
+       contact_groups rhmapadmins
+}
 
 define service {
        service_description jenkins::ping

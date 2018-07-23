@@ -7,7 +7,8 @@ def oc(*args):
 
 
 def _get_service_selectors(oc, project, service):
-    svc = json.loads(oc("-n", project, "get", "service", service, "-o", "json"))
+    svc = json.loads(
+        oc("-n", project, "get", "service", service, "-o", "json"))
     return [k + "=" + v for k, v in svc["spec"]["selector"].items()]
 
 
@@ -34,7 +35,8 @@ def _get_running_pod_names(oc, project, selector=None, container_names=None):
     pods = json.loads(oc(*args))["items"]
 
     if container_names:
-        pods = [p for p in pods for c in p["spec"]["containers"] if c["name"] in container_names]
+        pods = [p for p in pods for c in p["spec"]
+                ["containers"] if c["name"] in container_names]
 
     return [p["metadata"]["name"] for p in pods if p["status"]["phase"] == "Running"]
 
@@ -46,12 +48,21 @@ def get_running_pod_names(project, selector=None, container_names=None):
 def _get_nodes_from_names(pods):
     nodes = []
     for pod in pods:
-        nodes.append(json.loads(oc("get", "pods", pod, "-o", "json"))["spec"]["nodeName"])
+        nodes.append(json.loads(
+            oc("get", "pods", pod, "-o", "json"))["spec"]["nodeName"])
     return nodes
 
 
 def get_nodes_from_names(pods):
     return _get_nodes_from_names(pods)
+
+
+def _get_deploymentconfigs(oc, project):
+    return json.loads(oc("-n", project, "get", "dc", "-o", "json"))
+
+
+def get_deploymentconfigs(project):
+    return _get_deploymentconfigs(oc, project)
 
 
 def _exec_in_pods(oc, project, pods, cmd):

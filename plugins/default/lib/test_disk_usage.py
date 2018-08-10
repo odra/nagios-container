@@ -39,9 +39,6 @@ class TestParseDfLine(unittest.TestCase):
             r"  1%    1% /"),
             ("/", 1, 1))
         self.assertEqual(parse_df_line(
-            r" 10%    1% /etc/hosts"),
-            ("/etc/hosts", 10, 1))
-        self.assertEqual(parse_df_line(
             r"  1%    1% /run/secrets/kubernetes.io/serviceaccount"),
             ("/run/secrets/kubernetes.io/serviceaccount", 1, 1))
         self.assertEqual(parse_df_line(
@@ -55,9 +52,8 @@ class TestParseDfLines(unittest.TestCase):
         self.assertEqual(parse_df_lines(
             "Use% IUse% Mounted on\n"
             "  1%    1% /\n"
-            " 19%    8% /etc/hosts\n"
             "  1%    1% /run/secrets/kubernetes.io/serviceaccount\n"),
-            [("/", 1, 1), ("/etc/hosts", 19, 8), ("/run/secrets/kubernetes.io/serviceaccount", 1, 1)])
+            [("/", 1, 1), ("/run/secrets/kubernetes.io/serviceaccount", 1, 1)])
 
 
 class TestReport(unittest.TestCase):

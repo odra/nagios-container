@@ -38,8 +38,7 @@ check_disk_cmd = ("df", "--output=pcent,ipcent,target")
 # Example output:
 # Use% IUse% Mounted on
 #   1%    1% /
-#  20%    8% /etc/hosts
-check_disk_output_pattern = re.compile(r"\s*(\d+)%\s+(\d+)%\s+(.+)$")
+check_disk_output_pattern = re.compile(r"\s*(\d+)%\s+(\d+)%\s+(?!\/etc\/hosts)(.+)$")
 
 
 def parse_df_line(line):

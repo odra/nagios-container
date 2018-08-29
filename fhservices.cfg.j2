@@ -169,11 +169,25 @@ define host {
        hostgroups {{ rhmap_hostgroups }}
 }
 
+# Service templates
+define service {
+       name database-service
+       use generic-service
+       normal_check_interval 1
+       register 0
+}
+define service {
+       name fh-service
+       use generic-service
+       normal_check_interval 5
+       register 0
+}
+
 {% for fhservice in fh_services if 'ping' in fhservice['checks'] %}
 define service {
        service_description {{ fhservice['name'] }}::Ping
        check_command check_fh_component_http_ping!{{ fhservice.get("service", fhservice['name']) }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("ping_endpoint", "/sys/info/ping") }}
-       use generic-service
+       use fh-service
        hostgroup_name {{ ",".join(fhservice['hostgroups']) }}
        notes This server cannot access {{ fhservice['name'] }}, check it is running and that this server is able to talk to it on port 8080
        contact_groups rhmapadmins
@@ -184,7 +198,7 @@ define service {
 define service {
        service_description {{ fhservice['name'] }}::Health
        check_command check_fh_component_health!{{ fhservice.get("service", fhservice['name']) }}!{{ fhservice.get("port", "8080") }}!{{ fhservice.get("health_endpoint", "/sys/info/health") }}
-       use generic-service
+       use fh-service
        hostgroup_name {{ ",".join(fhservice['hostgroups']) }}
        notes This server failed to get a successful response from the {{ fhservice['name'] }} health endpoint. Check the response code & body and ensure the service and its dependencies are running and configured correctly.
        contact_groups rhmapadmins
@@ -194,7 +208,7 @@ define service {
 define service {
       service_description keycloak:Health
       check_command check_eap_component_health!ups!8080!/auth/admin!HTTP/1.1 302
-      use generic-service
+      use fh-service
       hostgroup_name core
       notes This server failed to get a successful response from the Keycloak service health endpoint. Check the response code & body and ensure the service and its dependencies are running and configured correctly.
       contact_groups rhmapadmins
@@ -203,7 +217,7 @@ define service {
 define service {
       service_description memcached:Ping
       check_command check_memcached!11211
-      use generic-service
+      use fh-service
       hostgroup_name core
       notes This should be able to communicate with memcached on port 11211 and cannot. Check it is running and this server can communicate with it on that port.
       contact_groups rhmapadmins
@@ -212,7 +226,7 @@ define service {
 define service {
       service_description redis:Ping
       check_command check_redis!6379
-      use generic-service
+      use fh-service
       hostgroup_name core
       notes This should be able to communicate with redis on port 6379 and cannot. Check it is running and this server can communicate with it on that port.
       contact_groups rhmapadmins
@@ -221,7 +235,7 @@ define service {
 define service {
        service_description Storage::Pod::Disk Usage
        check_command check_pod_disk_usage!80!90
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas,digger
        notes One or more pods have volumes which are running out of disk.  You should clean up the files on this pod, if possible, or scale down/up the pod so that it has a fresh filesystem.
        contact_groups rhmapadmins
@@ -231,7 +245,7 @@ define service {
 define service {
        service_description mongodb::replicaset
        check_command check_mongodb!mongodb,mongodb-service
-       use generic-service
+       use database-service
        hostgroup_name core,mbaas
        notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
        contact_groups rhmapadmins
@@ -240,7 +254,7 @@ define service {
 define service {
        service_description mongodb::affinity
        check_command check_mongodb_affinity
-       use generic-service
+       use database-service
        hostgroup_name core,mbaas
        notes This check ensures that each mongodb pod is on a seperate node
        contact_groups rhmapadmins
@@ -250,7 +264,7 @@ define service {
 define service {
        service_description pod::affinity
        check_command check_pod_affinity
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas
        notes This check ensures that each component pod is running on a seperate node
        contact_groups rhmapadmins
@@ -259,7 +273,7 @@ define service {
 define service {
        service_description jenkins::ping
        check_command check_jenkins!80!/login
-       use generic-service
+       use fh-service
        hostgroup_name digger
        contact_groups rhmapadmins
 }
@@ -268,7 +282,7 @@ define service {
 define service {
        service_description mac_ios::ping
        check_command ios_machine_health!{{ jenkins_host }}!{{ jenkins_port }}!{{ jenkins_user }}!{{ jenkins_pass }}
-       use generic-service
+       use fh-service
        hostgroup_name digger
        contact_groups rhmapadmins
 
@@ -279,7 +293,7 @@ define service {
 define service {
       service_description android_pvc::check
       check_command android_pvc_check
-      use generic-service
+      use fh-service
       hostgroup_name digger
       contact_groups rhmapadmins
 }
@@ -290,7 +304,7 @@ define service {
 define service {
   service_description {{ mongodb_service }}:Ping
   check_command check_mongodb_ping!{{ mongodb_service }}!27017
-  use generic-service
+  use database-service
   hostgroup_name core,mbaas
   notes This should be able to communicate with mongodb on port 27017 and cannot. Check it is running and this server can communicate with it on that port.
   contact_groups rhmapadmins
@@ -302,7 +316,7 @@ define service {
        service_description mysql::health
        check_command check_mysql!mysql!mysql
        hostgroup_name core
-       use generic-service
+       use database-service
        notes The mysql instance may not be functioning properly.
        contact_groups rhmapadmins
 }
@@ -314,7 +328,7 @@ define service {
          service_description {{ mysql_service }}::health
          check_command check_mysql_master_slave!{{ mysql_service }}!{{ mysql_service }}
          hostgroup_name core
-         use generic-service
+         use database-service
          notes The mysql instance may not be functioning properly.
          contact_groups rhmapadmins
   }
@@ -324,7 +338,7 @@ define service {
 define service {
        service_description MongoDB::fhmessaging::collections
        check_command check_fhmessaging_collections!mongodb
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas
        notes Missing daily topic_YYYYMMDD fh-messaging collections, potentially a millicore threading issue
        contact_groups rhmapadmins
@@ -333,7 +347,7 @@ define service {
 define service {
        service_description Container::Memory Usage
        check_command check_pod_memory_usage!80!90
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas,digger
        notes One or more containers are running out of memory.
        contact_groups rhmapadmins
@@ -342,7 +356,7 @@ define service {
 define service {
        service_description Container::CPU Usage
        check_command check_pod_cpu_usage!80!90
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas,digger
        notes One or more containers have a high CPU load.
        contact_groups rhmapadmins
@@ -351,7 +365,7 @@ define service {
 define service {
        service_description Container::Resource Limits
        check_command check_pod_resource_limits
-       use generic-service
+       use fh-service
        hostgroup_name core,mbaas,digger
        notes One or more containers has no limit set for CPU and/or Memory.
        contact_groups rhmapadmins

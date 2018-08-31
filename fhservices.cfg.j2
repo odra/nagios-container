@@ -137,11 +137,6 @@ define hostgroup {
 }
 
 define hostgroup {
-       hostgroup_name userdata
-       alias userdata
-}
-
-define hostgroup {
        hostgroup_name digger
        alias digger
 }
@@ -267,7 +262,7 @@ define service {
        service_description userdata::mongodb::replicaset
        check_command check_mongodb!mongodb,mongodb-service!{{ userdata_project_name }}
        use database-service
-       hostgroup_name userdata
+       hostgroup_name core
        notes The mongodb replica set in the userdata project {{userdata_project_name}} may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
        contact_groups rhmapadmins
 }
@@ -276,7 +271,7 @@ define service {
        service_description userdata::mongodb::affinity
        check_command check_mongodb_affinity!{{ userdata_project_name }}
        use database-service
-       hostgroup_name userdata
+       hostgroup_name core
        notes This check ensures that each mongodb pod is on a seperate node
        contact_groups rhmapadmins
 }
@@ -337,7 +332,7 @@ define service {
   service_description userdata:{{ userdata_mongodb_service }}:Ping
   check_command check_mongodb_ping!{{ userdata_mongodb_service }}.{{ userdata_project_name }}.svc!27017
   use database-service
-  hostgroup_name userdata
+  hostgroup_name core
   notes This should be able to communicate with mongodb on port 27017 in the userdata project {{ userdata_project_name }} and cannot. Check it is running and this server can communicate with it on that port.
   contact_groups rhmapadmins
 }

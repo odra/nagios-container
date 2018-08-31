@@ -3,7 +3,7 @@ from subprocess import check_output, STDOUT
 
 
 def oc(*args):
-    return check_output(("kubectl",) + args, stderr=STDOUT)
+    return check_output(("oc",) + args, stderr=STDOUT)
 
 
 def _get_service_selectors(oc, project, service):

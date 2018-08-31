@@ -10,6 +10,7 @@
 #
 ######################################################################
 import argparse
+import os
 import sys
 import traceback
 
@@ -59,6 +60,11 @@ if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
+        # workaround for oc bug which fails to handle namespace param
+        os.system("mkdir -p /tmp/kube_home")
+        os.environ["HOME"] = "/tmp/kube_home"
+        os.system("oc project " + args.project + " > /dev/null")
+
         code = check(args.project)
     except:
         traceback.print_exc()

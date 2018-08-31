@@ -16,6 +16,7 @@ import traceback
 import nagios
 import openshift
 
+
 def generate_parser():
     parser = argparse.ArgumentParser(
         description="Checks the status of mongodb pod nodes",
@@ -25,6 +26,7 @@ def generate_parser():
         help='the project name the checks should be running against',
     )
     return parser
+
 
 def report(nag_status, output):
     print(output)

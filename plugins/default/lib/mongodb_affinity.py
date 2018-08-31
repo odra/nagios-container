@@ -41,7 +41,7 @@ def check(project):
     if not pods:
         output = "Unable to locate any mongodb containers"
         return nagios.UNKNOWN
-    nodes = openshift.get_nodes_from_names(pods)
+    nodes = openshift.get_nodes_from_names(pods, project)
     nodes_pods = dict(zip(pods, nodes))
     if len(nodes) < 3:
         output = nodes_pods

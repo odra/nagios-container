@@ -85,7 +85,7 @@ define command {
 
 define command {
   command_name   check_mongodb
-  command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$ --project $ARG2$
+  command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$ --project "$ARG2$"
 }
 
 define command {
@@ -95,7 +95,7 @@ define command {
 
 define command {
   command_name   check_mongodb_affinity
-  command_line   /opt/rhmap/nagios/plugins/mongodb-affinity --project $ARG1$
+  command_line   /opt/rhmap/nagios/plugins/mongodb-affinity --project "$ARG1$"
 }
 
 define command {

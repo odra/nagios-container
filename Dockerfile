@@ -9,7 +9,7 @@ RUN yum install -y epel-release && \
     yum -y --setopt=tsflags=nodocs install $INSTALL_PKGS && \
     rpm -V $INSTALL_PKGS && \
     yum clean all && \
-    curl --retry 999 --retry-max-time 0 -sSL https://github.com/openshift/origin/releases/download/v3.10.0/openshift-origin-server-v3.10.0-dd10d17-linux-64bit.tar.gz | tar xzv && \
+    curl --retry 999 --retry-max-time 0 -sSL https://github.com/openshift/origin/releases/download/v1.2.0/openshift-origin-client-tools-v1.2.0-2e62fab-linux-64bit.tar.gz | tar xzv && \
     mv openshift-origin-*/* /usr/bin/ && \
     mkdir -p /opt/rhmap/ && \
     sed -i -e 's/Listen 80/Listen 8080/' \

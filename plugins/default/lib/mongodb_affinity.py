@@ -9,12 +9,22 @@
 # Copyright (c) 2018, Red Hat Ltd. All rights reserved.
 #
 ######################################################################
+import argparse
 import sys
 import traceback
 
 import nagios
 import openshift
 
+def generate_parser():
+    parser = argparse.ArgumentParser(
+        description="Checks the status of mongodb pod nodes",
+    )
+    parser.add_argument(
+        "-p", "--project", required=False,
+        help='the project name the checks should be running against',
+    )
+    return parser
 
 def report(nag_status, output):
     print(output)
@@ -22,8 +32,9 @@ def report(nag_status, output):
     return nag_status
 
 
-def check():
-    project = openshift.get_project()
+def check(project):
+    if not project:
+        project = openshift.get_project()
     pods = openshift.get_running_pod_names(project, container_names="mongodb")
     if not pods:
         output = "Unable to locate any mongodb containers"
@@ -43,9 +54,10 @@ def check():
 
 
 if __name__ == "__main__":
+    args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
-        code = check()
+        code = check(args.project)
     except:
         traceback.print_exc()
     finally:

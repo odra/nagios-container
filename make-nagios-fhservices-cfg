@@ -32,6 +32,14 @@ except ValueError:
 
 mongodb_services = ['mongodb-%s' % i for i in xrange(1, mongodb_count + 1)]
 
+userdata_project_name = os.getenv('USERDATA_PROJECT_NAME', 'rhmap-user-data')
+try:
+    userdata_mongodb_count = int(os.getenv('USERDATA_MONGODB_ENDPOINT_COUNT', 3))
+except ValueError:
+    userdata_mongodb_count = 3
+
+userdata_mongodb_services = ['mongodb-%s' % i for i in xrange(1, userdata_mongodb_count + 1)]
+
 try:
     mysql_count = int(os.getenv('MYSQL_ENDPOINT_COUNT', 3))
 #if env var is an empty string or is not able to be converted into a number
@@ -83,7 +91,10 @@ j2renderedouput = j2template.render(fh_services=fh_services,
                                     jenkins_user=jenkins_user,
                                     jenkins_pass=jenkins_pass,
                                     check_android=check_android,
-                                    check_mac=check_mac)
+                                    check_mac=check_mac,
+                                    userdata_project_name=userdata_project_name,
+                                    userdata_mongodb_services=userdata_mongodb_services,
+                                    userdata_mongodb_instances=userdata_mongodb_count)
 
 with open(nagios_config_filename, 'wb') as nagios_config_file:
     nagios_config_file.write(j2renderedouput)

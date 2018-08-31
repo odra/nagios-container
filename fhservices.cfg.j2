@@ -85,7 +85,7 @@ define command {
 
 define command {
   command_name   check_mongodb
-  command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$
+  command_line   /opt/rhmap/nagios/plugins/mongodb-health --container $ARG1$ --project $ARG2$
 }
 
 define command {
@@ -95,7 +95,7 @@ define command {
 
 define command {
   command_name   check_mongodb_affinity
-  command_line   /opt/rhmap/nagios/plugins/mongodb-affinity
+  command_line   /opt/rhmap/nagios/plugins/mongodb-affinity --project $ARG1$
 }
 
 define command {
@@ -135,6 +135,12 @@ define hostgroup {
        hostgroup_name mbaas
        alias mbaas
 }
+
+define hostgroup {
+       hostgroup_name userdata
+       alias userdata
+}
+
 define hostgroup {
        hostgroup_name digger
        alias digger
@@ -256,6 +262,26 @@ define service {
 }
 {% endif %}
 
+{%if userdata_mongodb_instances > 1 %}
+define service {
+       service_description mongodb::replicaset
+       check_command check_mongodb!mongodb,mongodb-service!{{ userdata_project_name }}
+       use database-service
+       hostgroup_name userdata
+       notes The mongodb replica set may not be functioning properly.  There should be one and only one primary member and zero or more secondary members
+       contact_groups rhmapadmins
+}
+
+define service {
+       service_description mongodb::affinity
+       check_command check_mongodb_affinity!{{ userdata_project_name }}
+       use database-service
+       hostgroup_name userdata
+       notes This check ensures that each mongodb pod is on a seperate node
+       contact_groups rhmapadmins
+}
+{% endif %}
+
 define service {
        service_description pod::affinity
        check_command check_pod_affinity
@@ -301,6 +327,17 @@ define service {
   check_command check_mongodb_ping!{{ mongodb_service }}!27017
   use database-service
   hostgroup_name core,mbaas
+  notes This should be able to communicate with mongodb on port 27017 and cannot. Check it is running and this server can communicate with it on that port.
+  contact_groups rhmapadmins
+}
+{% endfor %}
+
+{% for userdata_mongodb_service in userdata_mongodb_services %}
+define service {
+  service_description {{ userdata_mongodb_service }}:Ping
+  check_command check_mongodb_ping!{{ userdata_mongodb_service }}.{{ userdata_project_name }}.svc!27017
+  use database-service
+  hostgroup_name userdata
   notes This should be able to communicate with mongodb on port 27017 and cannot. Check it is running and this server can communicate with it on that port.
   contact_groups rhmapadmins
 }

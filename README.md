@@ -54,7 +54,7 @@ In the case of checks where multiple components are involved (i.e cpu and memory
 
 #### Hostgroups
 
-Currently there are 4 available hostgroups that nagios will run checks for, `core, mbaas, userdata and digger` Depending on the project the nagios container is being deployed to, the checks run will be decided by this value.
+Currently there are 3 available hostgroups that nagios will run checks for, `core, mbaas and digger` Depending on the project the nagios container is being deployed to, the checks run will be decided by this value.
 
 #### Create a New Check
 

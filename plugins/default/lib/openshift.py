@@ -45,16 +45,16 @@ def get_running_pod_names(project, selector=None, container_names=None):
     return _get_running_pod_names(oc, project, selector, container_names)
 
 
-def _get_nodes_from_names(pods):
+def _get_nodes_from_names(pods, project):
     nodes = []
     for pod in pods:
         nodes.append(json.loads(
-            oc("get", "pods", pod, "-o", "json"))["spec"]["nodeName"])
+            oc("get", "pods", pod, "-o", "json", "-n", project))["spec"]["nodeName"])
     return nodes
 
 
-def get_nodes_from_names(pods):
-    return _get_nodes_from_names(pods)
+def get_nodes_from_names(pods, project):
+    return _get_nodes_from_names(pods, project)
 
 
 def _get_deploymentconfigs(oc, project):

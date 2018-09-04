@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import json
+import os
 import sys
 import traceback
 from collections import Counter
@@ -39,6 +40,10 @@ def generate_parser():
     parser.add_argument(
         "-c", "--containers", required=True,
         help='container name(s) for MongoDB pods separated by , (e.g.: "mongodb,mongodb-service")',
+    )
+    parser.add_argument(
+        "-p", "--project", required=False,
+        help='the project name the checks should be running against',
     )
     return parser
 
@@ -107,8 +112,9 @@ def report(pods, rs_statuses, nag_statuses):
     return ret
 
 
-def check(containers):
-    project = openshift.get_project()
+def check(containers, project):
+    if not project:
+        project = openshift.get_project()
 
     pods = openshift.get_running_pod_names(project, container_names=containers.split(','))
 
@@ -122,7 +128,12 @@ if __name__ == "__main__":
     args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
-        code = check(args.containers)
+        # workaround for oc bug which fails to handle namespace param
+        os.system("mkdir -p /tmp/kube_home")
+        os.environ["HOME"] = "/tmp/kube_home"
+        os.system("oc project " + args.project + " > /dev/null")
+
+        code = check(args.containers, args.project)
     except:
         traceback.print_exc()
     finally:

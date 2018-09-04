@@ -9,11 +9,24 @@
 # Copyright (c) 2018, Red Hat Ltd. All rights reserved.
 #
 ######################################################################
+import argparse
+import os
 import sys
 import traceback
 
 import nagios
 import openshift
+
+
+def generate_parser():
+    parser = argparse.ArgumentParser(
+        description="Checks the status of mongodb pod nodes",
+    )
+    parser.add_argument(
+        "-p", "--project", required=False,
+        help='the project name the checks should be running against',
+    )
+    return parser
 
 
 def report(nag_status, output):
@@ -22,13 +35,14 @@ def report(nag_status, output):
     return nag_status
 
 
-def check():
-    project = openshift.get_project()
+def check(project):
+    if not project:
+        project = openshift.get_project()
     pods = openshift.get_running_pod_names(project, container_names="mongodb")
     if not pods:
         output = "Unable to locate any mongodb containers"
         return nagios.UNKNOWN
-    nodes = openshift.get_nodes_from_names(pods)
+    nodes = openshift.get_nodes_from_names(pods, project)
     nodes_pods = dict(zip(pods, nodes))
     if len(nodes) < 3:
         output = nodes_pods
@@ -43,9 +57,15 @@ def check():
 
 
 if __name__ == "__main__":
+    args = generate_parser().parse_args()
     code = nagios.UNKNOWN
     try:
-        code = check()
+        # workaround for oc bug which fails to handle namespace param
+        os.system("mkdir -p /tmp/kube_home")
+        os.environ["HOME"] = "/tmp/kube_home"
+        os.system("oc project " + args.project + " > /dev/null")
+
+        code = check(args.project)
     except:
         traceback.print_exc()
     finally:

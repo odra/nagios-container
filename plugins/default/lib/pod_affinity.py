@@ -34,7 +34,7 @@ def check():
         componentName = deploymentConfig["metadata"]["name"]
         pods = openshift.get_running_pod_names(
             project, container_names=componentName)
-        nodes = openshift.get_nodes_from_names(pods)
+        nodes = openshift.get_nodes_from_names(pods, project)
         if len(pods) > 1:
             for node in set(nodes):
                 nodeCount = nodes.count(node)

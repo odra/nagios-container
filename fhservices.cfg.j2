@@ -338,29 +338,16 @@ define service {
 }
 {% endfor %}
 
-{% if mysql_services|length == 1 %}
+{% for mysql_service in mysql_services %}
 define service {
-       service_description mysql::health
-       check_command check_mysql!mysql!mysql
-       hostgroup_name core
-       use database-service
-       notes The mysql instance may not be functioning properly.
-       contact_groups rhmapadmins
+  service_description {{ mysql_service }}::health
+  check_command check_mysql_master_slave!{{ mysql_service }}!{{ mysql_service }}
+  hostgroup_name core
+  use database-service
+  notes The mysql instance may not be functioning properly.
+  contact_groups rhmapadmins
 }
-{% endif %}
-
-{% if mysql_services|length > 1 %}
-  {% for mysql_service in mysql_services %}
-  define service {
-         service_description {{ mysql_service }}::health
-         check_command check_mysql_master_slave!{{ mysql_service }}!{{ mysql_service }}
-         hostgroup_name core
-         use database-service
-         notes The mysql instance may not be functioning properly.
-         contact_groups rhmapadmins
-  }
-  {% endfor %}
-{% endif %}
+{% endfor %}
 
 define service {
        service_description Container::Memory Usage

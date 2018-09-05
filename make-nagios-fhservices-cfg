@@ -46,10 +46,7 @@ try:
 except ValueError:
     mysql_count = 3
 
-if mysql_count == 3:
-    mysql_services = ['mysql', 'mysql-2', 'mysql-3']
-else:
-    mysql_services = ['mysql']
+mysql_services = ['mysql'] + ['mysql-%s' % i for i in xrange(2, mysql_count + 1)]
 
 jenkins_host = os.getenv('JENKINS_SERVICE_HOST')
 jenkins_port = os.getenv('JENKINS_SERVICE_PORT')

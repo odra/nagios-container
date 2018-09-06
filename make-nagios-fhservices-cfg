@@ -32,13 +32,17 @@ except ValueError:
 
 mongodb_services = ['mongodb-%s' % i for i in xrange(1, mongodb_count + 1)]
 
-userdata_project_name = os.getenv('USERDATA_PROJECT_NAME', 'rhmap-user-data')
-try:
-    userdata_mongodb_count = int(os.getenv('USERDATA_MONGODB_ENDPOINT_COUNT', 3))
-except ValueError:
-    userdata_mongodb_count = 3
 
+userdata_project_name = os.getenv('USERDATA_PROJECT_NAME')
+userdata_mongodb_count = 0
+
+if userdata_project_name:
+    try:
+        userdata_mongodb_count = int(os.getenv('USERDATA_MONGODB_ENDPOINT_COUNT', 3))
+    except ValueError:
+        userdata_mongodb_count = 3
 userdata_mongodb_services = ['mongodb-%s' % i for i in xrange(1, userdata_mongodb_count + 1)]
+
 
 try:
     mysql_count = int(os.getenv('MYSQL_ENDPOINT_COUNT', 3))

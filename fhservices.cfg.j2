@@ -306,29 +306,27 @@ define service {
 }
 {% endfor %}
 
-{% if mysql_services|length == 1 %}
+{% for userdata_mongodb_service in userdata_mongodb_services %}
 define service {
-       service_description mysql::health
-       check_command check_mysql!mysql!mysql
-       hostgroup_name core
-       use database-service
-       notes The mysql instance may not be functioning properly.
-       contact_groups rhmapadmins
+  service_description userdata:{{ userdata_mongodb_service }}:Ping
+  check_command check_mongodb_ping!{{ userdata_mongodb_service }}.{{ userdata_project_name }}.svc!27017
+  use database-service
+  hostgroup_name core
+  notes This should be able to communicate with mongodb on port 27017 in the userdata project {{ userdata_project_name }} and cannot. Check it is running and this server can communicate with it on that port.
+  contact_groups rhmapadmins
 }
-{% endif %}
+{% endfor %}
 
-{% if mysql_services|length > 1 %}
-  {% for mysql_service in mysql_services %}
-  define service {
-         service_description {{ mysql_service }}::health
-         check_command check_mysql_master_slave!{{ mysql_service }}!{{ mysql_service }}
-         hostgroup_name core
-         use database-service
-         notes The mysql instance may not be functioning properly.
-         contact_groups rhmapadmins
-  }
-  {% endfor %}
-{% endif %}
+{% for mysql_service in mysql_services %}
+define service {
+  service_description {{ mysql_service }}::health
+  check_command check_mysql_master_slave!{{ mysql_service }}!{{ mysql_service }}
+  hostgroup_name core
+  use database-service
+  notes The mysql instance may not be functioning properly.
+  contact_groups rhmapadmins
+}
+{% endfor %}
 
 define service {
        service_description Container::Memory Usage

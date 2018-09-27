@@ -338,6 +338,18 @@ define service {
 }
 {% endfor %}
 
+{% if mysql_services|length == 1 %}
+define service {
+  service_description mysql::health
+  check_command check_mysql!mysql!mysql
+  hostgroup_name core
+  use generic-service
+  notes The mysql instance may not be functioning properly.
+  contact_groups rhmapadmins
+}
+{% endif %}
+
+{% if mysql_services|length > 1 %}
 {% for mysql_service in mysql_services %}
 define service {
   service_description {{ mysql_service }}::health
@@ -348,6 +360,7 @@ define service {
   contact_groups rhmapadmins
 }
 {% endfor %}
+{% endif %}
 
 define service {
        service_description Container::Memory Usage

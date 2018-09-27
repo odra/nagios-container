@@ -90,8 +90,7 @@ def exec_in_pod_container(project, pod, container, cmd):
 
 
 def _get_running_pod_containers(oc, project, selector=None, container_names=None):
-    # Changed param from "--show-all=false" to "--show-all=true" due to changes in oc client
-    args = ("-n", project, "get", "pods", "--show-all=true", "-o", "json")
+    args = ("-n", project, "get", "pods", "-o", "json")
 
     if selector:
         args += ("--selector=" + ",".join(selector),)

@@ -45,10 +45,10 @@ userdata_mongodb_services = ['mongodb-%s' % i for i in xrange(1, userdata_mongod
 
 
 try:
-    mysql_count = int(os.getenv('MYSQL_ENDPOINT_COUNT', 3))
+    mysql_count = int(os.getenv('MYSQL_ENDPOINT_COUNT', 1))
 #if env var is an empty string or is not able to be converted into a number
 except ValueError:
-    mysql_count = 3
+    mysql_count = 1
 
 mysql_services = ['mysql'] + ['mysql-%s' % i for i in xrange(2, mysql_count + 1)]
 
